@@ -1,0 +1,23 @@
+﻿
+
+<div class="myStyle2Class">
+    <table>
+        <thead>
+            <tr>
+                <td>Id</td>
+                <td>Name</td>
+                <td>Price</td>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var p in ViewBag.Products)
+            {
+                <tr>
+                    <td>@p.Id</td>
+                    <td>@p.Name</td>
+                    <td>@p.Price.ToString("c")</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
