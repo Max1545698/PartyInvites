@@ -17,7 +17,10 @@ namespace SportsStore.Controllers
             cart = cartService;
         }
 
-        public ViewResult Checkout() => View(new Order());
+        public ViewResult Checkout()
+        {
+            return View(new Order());
+        }
 
         [HttpPost]
         public IActionResult Checkout(Order order)
