@@ -7,7 +7,7 @@ namespace SportsStore.Models.ViewModels
 {
     public class CategoryListViewModel
     {
-        public string CurrentCategory { get; set; }
+       public string CurrentCategory { get; set; }
        public IQueryable<string> Categories { get; set; }
     }
 }

@@ -1,4 +1,4 @@
-﻿ using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -32,16 +32,22 @@ namespace SportsStore
                Configuration["Data:SportStoreProducts:ConnectionString"]));
 
             services.AddTransient<IProductRepository, EFProductRepository>();
-
+            services.AddScoped<Cart>(sp => SessionCart.GetCart(sp)); // конфигурация по умолчанию -
+                                                                     //будет выделяться один экземпляр класса Cart в пределах одного HTTP запроса
+            services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();//когда нужна реализация
+                                                                               //IHttpContextAccessor всегда будет подставлятся HttpContextAccessor
+            services.AddTransient<IOrderRepository, EFOrderRepository>();
             services.AddMvc();
+            services.AddMemoryCache();//Настраивает хранилище данных в пямяти 
+            services.AddSession();//регестрирует службы используемые для доступа к данным сеанса
         }
 
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
             app.UseDeveloperExceptionPage();
             app.UseStatusCodePages();
-
             app.UseStaticFiles();
+            app.UseSession();//позволяет сессии автоматически асоциировать себя с запросом от клиента
 
             app.UseMvc(routes =>
             {
@@ -72,10 +78,10 @@ namespace SportsStore
                 routes.MapRoute(
                     name: null,
                     template: "{controller}/{action}/{id?}");
-   
+
             });
 
-           SeedData.EnsurePopulated(app);
+            SeedData.EnsurePopulated(app);
         }
     }
 }
