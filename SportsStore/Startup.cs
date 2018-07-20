@@ -46,7 +46,7 @@ namespace SportsStore
 
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
-            CultureInfo.CurrentCulture = new CultureInfo("uk-UA");
+            CultureInfo.CurrentCulture = new CultureInfo("en-US");
             app.UseDeveloperExceptionPage();
             app.UseStatusCodePages();
             app.UseStaticFiles();
