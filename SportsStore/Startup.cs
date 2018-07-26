@@ -9,6 +9,7 @@ using System.Xml;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -33,6 +34,15 @@ namespace SportsStore
             options.UseSqlServer(
                Configuration["Data:SportStoreProducts:ConnectionString"]));
 
+            services.AddDbContext<AppIdentityDbContext>(options =>
+            options.UseSqlServer(
+                Configuration["Data:SportStoreIdentity:ConnectionString"]));
+
+            services.AddIdentity<IdentityUser, IdentityRole>()
+                .AddEntityFrameworkStores<AppIdentityDbContext>()
+                .AddDefaultTokenProviders();
+
+
             services.AddTransient<IProductRepository, EFProductRepository>();
             services.AddScoped<Cart>(sp => SessionCart.GetCart(sp)); // конфигурация по умолчанию -
                                                                      //будет выделяться один экземпляр класса Cart в пределах одного HTTP запроса
@@ -46,12 +56,21 @@ namespace SportsStore
 
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
+            //IHostingEnvironment - используется для представления информации о среде
+            // в которой функционирует приложение
             CultureInfo.CurrentCulture = new CultureInfo("en-US");
-            app.UseDeveloperExceptionPage();
-            app.UseStatusCodePages();
+            if (env.IsDevelopment())
+            {
+                app.UseDeveloperExceptionPage();
+                app.UseStatusCodePages();
+            }
+            else
+            {
+                app.UseExceptionHandler("/Error");
+            }
             app.UseStaticFiles();
             app.UseSession();//позволяет сессии автоматически асоциировать себя с запросом от клиента
-
+            app.UseAuthentication();
             app.UseMvc(routes =>
             {
                 routes.MapRoute(
@@ -84,7 +103,8 @@ namespace SportsStore
 
             });
 
-            SeedData.EnsurePopulated(app);
+            //SeedData.EnsurePopulated(app);
+            //IdentitySeedData.EnsurePopulated(app);
         }
     }
 }
